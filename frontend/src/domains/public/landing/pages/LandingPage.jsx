@@ -7,6 +7,7 @@ import HowItWorksSection from '../components/HowItWorksSection.jsx'
 import FeaturesSection from '../components/FeaturesSection.jsx'
 import TraceabilitySection from '../components/TraceabilitySection.jsx'
 import IncentivesSection from '../components/IncentivesSection.jsx'
+import ContactSection from '../components/ContactSection.jsx'
 import FinalCtaSection from '../components/FinalCtaSection.jsx'
 
 // Landing pública de AgroGuardian (#46): una sola página con secciones ancladas.
@@ -22,7 +23,7 @@ export default function LandingPage() {
                 <FeaturesSection />
                 <TraceabilitySection />
                 <IncentivesSection />
-                {/* Sección contacto — se construye en el próximo combo. */}
+                <ContactSection />
                 <FinalCtaSection />
             </main>
             <Footer />
