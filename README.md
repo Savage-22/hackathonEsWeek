@@ -44,6 +44,13 @@ npm install
 npm run dev
 ```
 
+> **PWA / offline.** El frontend es instalable en Android (manifest + service worker
+> vía `vite-plugin-pwa`) y arranca sin conexión. Toda escritura de la app del
+> agricultor pasa primero por la capa local (IndexedDB con Dexie en
+> `src/infrastructure/offline/`) y se sincroniza con el backend al recuperar la red.
+> El service worker solo se activa en el build de producción: pruébalo con
+> `npm run build && npm run preview`.
+
 ### Desde la raíz
 
 ```bash
