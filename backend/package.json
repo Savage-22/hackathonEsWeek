@@ -8,8 +8,8 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "lint": "oxlint",
-    "db:schema": "psql \"$DATABASE_URL\" -f database/schema.sql",
-    "db:seed": "psql \"$DATABASE_URL\" -f database/seed.sql"
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js"
   },
   "keywords": [],
   "author": "",
