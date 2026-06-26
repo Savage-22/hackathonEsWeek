@@ -3,6 +3,7 @@ import Footer from '../components/Footer.jsx'
 import HeroSection from '../components/HeroSection.jsx'
 import WhatIsSection from '../components/WhatIsSection.jsx'
 import ChainSection from '../components/ChainSection.jsx'
+import HowItWorksSection from '../components/HowItWorksSection.jsx'
 import FinalCtaSection from '../components/FinalCtaSection.jsx'
 
 // Landing pública de AgroGuardian (#46): una sola página con secciones ancladas.
@@ -14,8 +15,9 @@ export default function LandingPage() {
                 <HeroSection />
                 <WhatIsSection />
                 <ChainSection />
-                {/* Secciones cómo funciona, características, trazabilidad, incentivos,
-                    contacto — se construyen en los próximos combos. */}
+                <HowItWorksSection />
+                {/* Secciones características, trazabilidad, incentivos, contacto —
+                    se construyen en los próximos combos. */}
                 <FinalCtaSection />
             </main>
             <Footer />
