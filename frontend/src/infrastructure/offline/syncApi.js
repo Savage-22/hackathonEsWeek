@@ -13,3 +13,12 @@ export async function pushOperations(operations) {
     const response = await httpClient.post('/api/sync', { operations })
     return response.data.data.applied
 }
+
+// Baja los cambios del agricultor posteriores a `since` (ISO) para refrescar
+// el dispositivo. Devuelve { since, changes: { plots, ... } }.
+export async function pullChanges(since) {
+    const response = await httpClient.get('/api/sync', {
+        params: since ? { since } : undefined,
+    })
+    return response.data.data
+}
