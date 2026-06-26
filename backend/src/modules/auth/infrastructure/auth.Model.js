@@ -5,7 +5,7 @@
  * sin lógica de negocio.
  */
 
-import pool from '../../../db.js'
+import pool from '../../../../db.js'
 
 class AuthModel {
     static async findFarmerByDni(dni) {

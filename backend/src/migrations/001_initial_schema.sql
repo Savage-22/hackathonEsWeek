@@ -1,4 +1,4 @@
--- AgroGuardian — Esquema relacional (PostgreSQL)
+-- AgroGuardian — 001 Esquema inicial
 --
 -- Convenciones (STYLE_GUIDE):
 --   - Campos en snake_case.
@@ -6,18 +6,8 @@
 --   - created_at / updated_at en toda tabla con ciclo de vida.
 --   - local_id en tablas sincronizables: idempotencia de la cola offline (#10).
 
--- Limpieza idempotente para re-aplicar el esquema desde cero
-DROP TABLE IF EXISTS batches CASCADE;
-DROP TABLE IF EXISTS applications CASCADE;
-DROP TABLE IF EXISTS crop_recommendations CASCADE;
-DROP TABLE IF EXISTS pesticides CASCADE;
-DROP TABLE IF EXISTS plots CASCADE;
-DROP TABLE IF EXISTS farmers CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-DROP FUNCTION IF EXISTS set_updated_at CASCADE;
-
 -- Trigger reutilizable: mantiene updated_at en cada UPDATE
-CREATE FUNCTION set_updated_at() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION set_updated_at() RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = now();
     RETURN NEW;
@@ -34,7 +24,7 @@ CREATE TABLE users (
     email         VARCHAR(160) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role          VARCHAR(20)  NOT NULL CHECK (role IN ('DRA', 'MUNICIPALIDAD', 'COOPERATIVA')),
-    district      VARCHAR(80),                         -- ámbito territorial (municipalidad/cooperativa)
+    district      VARCHAR(80),
     is_active     BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT now(),
     updated_at    TIMESTAMPTZ  NOT NULL DEFAULT now()
@@ -51,13 +41,13 @@ CREATE TABLE farmers (
     id_farmer     SERIAL PRIMARY KEY,
     name          VARCHAR(120) NOT NULL,
     dni           VARCHAR(15)  NOT NULL UNIQUE,
-    password_hash VARCHAR(255),                        -- clave simple de acceso a la app (#5)
+    password_hash VARCHAR(255),
     community     VARCHAR(120),
     district      VARCHAR(80),
     province      VARCHAR(80),
     phone         VARCHAR(20),
-    association   VARCHAR(120),                         -- opcional
-    local_id      VARCHAR(40)  UNIQUE,                  -- idempotencia de sincronización
+    association   VARCHAR(120),
+    local_id      VARCHAR(40)  UNIQUE,
     is_active     BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT now(),
     updated_at    TIMESTAMPTZ  NOT NULL DEFAULT now()
@@ -74,7 +64,7 @@ CREATE TABLE plots (
     id_plot                SERIAL PRIMARY KEY,
     id_farmer              INTEGER NOT NULL REFERENCES farmers(id_farmer),
     name                   VARCHAR(120) NOT NULL,
-    area_ha                NUMERIC(10, 2),               -- área en hectáreas
+    area_ha                NUMERIC(10, 2),
     latitude               NUMERIC(10, 7),
     longitude              NUMERIC(10, 7),
     crop                   VARCHAR(80) NOT NULL,
@@ -110,10 +100,10 @@ CREATE TABLE crop_recommendations (
     id_recommendation SERIAL PRIMARY KEY,
     crop              VARCHAR(80)  NOT NULL,
     id_pesticide      INTEGER      NOT NULL REFERENCES pesticides(id_pesticide),
-    recommended_dose  NUMERIC(10, 2) NOT NULL,          -- dosis recomendada por hectárea
-    dose_unit         VARCHAR(20)  NOT NULL,             -- ej. 'kg/ha', 'L/ha'
-    frequency_days    INTEGER,                            -- días entre aplicaciones
-    withdrawal_days   INTEGER      NOT NULL,             -- tiempo de carencia (días)
+    recommended_dose  NUMERIC(10, 2) NOT NULL,
+    dose_unit         VARCHAR(20)  NOT NULL,
+    frequency_days    INTEGER,
+    withdrawal_days   INTEGER      NOT NULL,
     is_active         BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at        TIMESTAMPTZ  NOT NULL DEFAULT now(),
     UNIQUE (crop, id_pesticide)
@@ -128,9 +118,9 @@ CREATE TABLE applications (
     id_application SERIAL PRIMARY KEY,
     id_plot        INTEGER NOT NULL REFERENCES plots(id_plot),
     id_pesticide   INTEGER NOT NULL REFERENCES pesticides(id_pesticide),
-    applied_at     TIMESTAMPTZ NOT NULL,                 -- fecha y hora de la aplicación
-    dose           NUMERIC(10, 2) NOT NULL,              -- dosis aplicada por hectárea
-    quantity       NUMERIC(10, 2),                        -- cantidad total usada
+    applied_at     TIMESTAMPTZ NOT NULL,
+    dose           NUMERIC(10, 2) NOT NULL,
+    quantity       NUMERIC(10, 2),
     photo_url      VARCHAR(255),
     observations   TEXT,
     local_id       VARCHAR(40) UNIQUE,
@@ -151,7 +141,7 @@ CREATE TRIGGER trg_applications_updated_at
 CREATE TABLE batches (
     id_batch   SERIAL PRIMARY KEY,
     id_plot    INTEGER NOT NULL REFERENCES plots(id_plot),
-    code       VARCHAR(40) NOT NULL UNIQUE,              -- código legible que viaja en el QR
+    code       VARCHAR(40) NOT NULL UNIQUE,
     level      VARCHAR(10) CHECK (level IN ('BRONCE', 'PLATA', 'ORO')),
     closed_at  TIMESTAMPTZ,
     local_id   VARCHAR(40) UNIQUE,
