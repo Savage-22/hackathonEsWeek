@@ -2,7 +2,7 @@
   "name": "agroguardian",
   "version": "1.0.0",
   "private": true,
-  "description": "AgroGuardian AI — uso responsable de pesticidas con trazabilidad y funcionamiento offline",
+  "description": "AgroGuardian — uso responsable de pesticidas con trazabilidad y funcionamiento offline",
   "scripts": {
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev"

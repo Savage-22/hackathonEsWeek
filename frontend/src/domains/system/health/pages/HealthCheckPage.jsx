@@ -43,7 +43,7 @@ export default function HealthCheckPage() {
     return (
         <main className="min-h-screen flex items-center justify-center p-6">
             <div className="w-full max-w-md rounded-2xl bg-white shadow-sm p-8 text-center">
-                <h1 className="text-2xl font-bold text-primary">AgroGuardian AI</h1>
+                <h1 className="text-2xl font-bold text-primary">AgroGuardian</h1>
                 <p className="mt-1 text-sm text-gray-500">
                     Cultivando tecnología, cosechando calidad
                 </p>
