@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "db:schema": "psql \"$DATABASE_URL\" -f database/schema.sql",
+    "db:seed": "psql \"$DATABASE_URL\" -f database/seed.sql"
   },
   "keywords": [],
   "author": "",
