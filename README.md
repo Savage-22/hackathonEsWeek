@@ -1,4 +1,4 @@
-# AgroGuardian AI
+# AgroGuardian
 
 Sistema inteligente para el uso responsable de pesticidas con trazabilidad y funcionamiento **offline** en zonas rurales de Huánuco.
 

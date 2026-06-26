@@ -1,4 +1,4 @@
--- AgroGuardian AI — Datos semilla del catálogo agrícola
+-- AgroGuardian — Datos semilla del catálogo agrícola
 --
 -- Cultivos clave de Huánuco (papa, maíz, tomate) con sus pesticidas y
 -- recomendaciones (dosis, frecuencia y días de carencia).

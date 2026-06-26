@@ -1,7 +1,7 @@
 {
   "name": "agroguardian-backend",
   "version": "1.0.0",
-  "description": "API de AgroGuardian AI",
+  "description": "API de AgroGuardian",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

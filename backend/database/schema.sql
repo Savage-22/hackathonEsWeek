@@ -1,4 +1,4 @@
--- AgroGuardian AI — Esquema relacional (PostgreSQL)
+-- AgroGuardian — Esquema relacional (PostgreSQL)
 --
 -- Convenciones (STYLE_GUIDE):
 --   - Campos en snake_case.
