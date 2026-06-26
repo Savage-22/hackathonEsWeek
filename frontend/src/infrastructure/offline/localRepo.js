@@ -6,11 +6,14 @@ import { processQueue } from './syncManager.js'
 // y encola la operación correspondiente; la sincronización ocurre en segundo plano.
 
 // Crea un registro local y lo encola para enviar al backend.
-// Devuelve el `localId` asignado por Dexie.
+// Devuelve el `localId` (clave Dexie) asignado.
 export async function createLocal(entity, data) {
+    // local_id: identidad estable generada en el cliente. El backend hace upsert
+    // por este valor, así que reenviar la misma operación no duplica (idempotencia).
+    const record = { ...data, local_id: data.local_id ?? crypto.randomUUID() }
     const localId = await db.transaction('rw', db.table(entity), db.outbox, async () => {
         const id = await db.table(entity).add({
-            ...data,
+            ...record,
             serverId: null,
             syncStatus: 'pending',
         })
@@ -18,7 +21,7 @@ export async function createLocal(entity, data) {
             entity,
             op: 'create',
             localId: id,
-            payload: data,
+            payload: record,
             createdAt: Date.now(),
         })
         return id
@@ -30,12 +33,15 @@ export async function createLocal(entity, data) {
 // Actualiza un registro local y lo vuelve a marcar `pending` para re-sincronizar.
 export async function updateLocal(entity, localId, changes) {
     await db.transaction('rw', db.table(entity), db.outbox, async () => {
+        const current = await db.table(entity).get(localId)
         await db.table(entity).update(localId, { ...changes, syncStatus: 'pending' })
         await db.outbox.add({
             entity,
             op: 'update',
             localId,
-            payload: changes,
+            // Se reenvía local_id para que el backend resuelva el upsert sobre el
+            // registro correcto, aunque el cambio sea parcial.
+            payload: { ...changes, local_id: current?.local_id },
             createdAt: Date.now(),
         })
     })
