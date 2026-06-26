@@ -9,7 +9,21 @@
     --color-success: #16a34a;
     --color-error: #dc2626;
 
+    /* Paleta extendida de la landing pública */
+    --color-forest: #14532d; /* verde bosque: secciones oscuras, botones */
+    --color-forest-deep: #0f3d24;
+    --color-ink: #14271c; /* títulos casi negros */
+    --color-muted: #5b6b60; /* texto secundario */
+    --color-cream: #f5f2e8; /* superficie cálida principal */
+    --color-beige: #e9e5d6; /* superficie alterna */
+    --color-info: #3b82f6; /* acento azul (chips, iconos) */
+
     --font-sans: 'Inter', system-ui, sans-serif;
+    --font-display: 'Poppins', 'Inter', system-ui, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {

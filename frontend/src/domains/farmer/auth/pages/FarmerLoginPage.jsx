@@ -21,7 +21,7 @@ export default function FarmerLoginPage() {
         setIsSubmitting(true)
         try {
             await loginFarmer(form.dni, form.password)
-            navigate('/')
+            navigate('/app')
         } catch (submitError) {
             setError(getFarmerAuthErrorMessage(submitError))
         } finally {
