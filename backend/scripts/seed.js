@@ -7,7 +7,7 @@
 import 'dotenv/config'
 import bcrypt from 'bcrypt'
 
-import pool from '../src/db.js'
+import pool from '../db.js'
 
 const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS) || 10
 const DEMO_PASSWORD = 'agro1234'

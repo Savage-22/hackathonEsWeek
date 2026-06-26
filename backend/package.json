@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "API de AgroGuardian",
   "type": "module",
-  "main": "src/index.js",
+  "main": "app.js",
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js",
+    "dev": "node --watch server.js",
+    "start": "node server.js",
     "lint": "oxlint",
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.js"
