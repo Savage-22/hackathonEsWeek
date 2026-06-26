@@ -22,10 +22,18 @@ Sistema inteligente para el uso responsable de pesticidas con trazabilidad y fun
 
 ```bash
 cd backend
-cp .env.example .env      # completar credenciales
+cp .env.example .env      # completar credenciales (DATABASE_URL de Neon, JWT_SECRET)
 npm install
+npm run migrate           # aplica las migraciones de src/migrations/
+npm run seed              # carga catálogo + usuarios demo
 npm run dev
 ```
+
+> **Base de datos (Neon).** Pon la cadena de conexión de Neon en `DATABASE_URL`
+> (incluye `?sslmode=require`). Luego `npm run migrate` crea las tablas y `npm run seed`
+> inserta el catálogo y los usuarios demo. Alternativamente, puedes pegar el contenido
+> de `src/migrations/001_initial_schema.sql` en el editor SQL de Neon y luego correr
+> `npm run seed`.
 
 ### Frontend
 
