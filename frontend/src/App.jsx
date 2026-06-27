@@ -16,6 +16,7 @@ import FarmerProfilePage from './domains/farmer/profile/pages/FarmerProfilePage.
 import FarmerPlotsPage from './domains/farmer/plots/pages/FarmerPlotsPage.jsx'
 import FarmerApplicationsPage from './domains/farmer/applications/pages/FarmerApplicationsPage.jsx'
 import PanelHomePage from './domains/institutional/dashboard/pages/PanelHomePage.jsx'
+import PublicTraceabilityPage from './domains/public/traceability/pages/PublicTraceabilityPage.jsx'
 import HealthCheckPage from './domains/system/health/pages/HealthCheckPage.jsx'
 
 export default function App() {
@@ -48,6 +49,9 @@ export default function App() {
             <Route element={<InstitutionalGuard />}>
                 <Route path="/panel" element={<PanelHomePage />} />
             </Route>
+
+            {/* Ficha pública de trazabilidad (la abre el comprador al escanear el QR) */}
+            <Route path="/t/:code" element={<PublicTraceabilityPage />} />
 
             <Route path="/health-check" element={<HealthCheckPage />} />
 

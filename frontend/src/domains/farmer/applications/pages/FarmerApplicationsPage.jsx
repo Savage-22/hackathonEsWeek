@@ -7,6 +7,7 @@ import { onConnectivityChange } from '../../../../infrastructure/offline/syncMan
 import OfflineBanner from '../../../../shared/components/OfflineBanner.jsx'
 import PhotoCapture from '../components/PhotoCapture.jsx'
 import AlertList from '../components/AlertList.jsx'
+import BatchSection from '../../traceability/components/BatchSection.jsx'
 import {
     getRecommendations,
     saveApplication,
@@ -262,6 +263,9 @@ export default function FarmerApplicationsPage() {
                         </ul>
                     )}
                 </section>
+
+                {/* Cierre de producción + QR del lote (#21) */}
+                <BatchSection plot={plot} />
             </div>
         </main>
     )
