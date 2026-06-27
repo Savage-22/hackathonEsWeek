@@ -1,6 +1,7 @@
 import ApplicationsModel from '../infrastructure/applications.Model.js'
 import PlotsModel from '../../plots/infrastructure/plots.Model.js'
 import PesticidesModel from '../../pesticides/infrastructure/pesticides.Model.js'
+import { evaluateApplication } from './alerts.Service.js'
 import { NotFoundError, ValidationError } from '../../../shared/errors.js'
 
 /**
@@ -19,12 +20,27 @@ class ApplicationsService {
     }
 
     static async create(farmerId, data) {
-        await ApplicationsService.assertOwnedPlot(data.id_plot, farmerId)
+        const plot = await ApplicationsService.assertOwnedPlot(data.id_plot, farmerId)
 
         const pesticide = await PesticidesModel.findById(data.id_pesticide)
         if (!pesticide) throw new ValidationError('Validación fallida', ['El pesticida indicado no existe'])
 
-        return ApplicationsModel.create(data)
+        const application = await ApplicationsModel.create(data)
+        const alerts = await ApplicationsService.evaluateAlerts(application, plot)
+        return { application, alerts }
+    }
+
+    // Reúne los datos que necesita el motor de alertas (#18) y lo ejecuta.
+    static async evaluateAlerts(application, plot) {
+        const [recommendation, previousApplication] = await Promise.all([
+            PesticidesModel.findRecommendation(plot.crop, application.id_pesticide),
+            ApplicationsModel.findLastByPlotPesticide(
+                application.id_plot,
+                application.id_pesticide,
+                application.id_application,
+            ),
+        ])
+        return evaluateApplication({ application, plot, recommendation, previousApplication })
     }
 
     static async listByPlot(farmerId, plotId) {

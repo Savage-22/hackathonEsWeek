@@ -29,6 +29,21 @@ class ApplicationsModel {
         return result.rows[0]
     }
 
+    // Última aplicación previa del mismo producto en la parcela (para la regla de
+    // frecuencia #18). Excluye la aplicación recién creada.
+    static async findLastByPlotPesticide(plotId, idPesticide, excludeId) {
+        const result = await pool.query(
+            `SELECT id_application, applied_at
+             FROM applications
+             WHERE id_plot = $1 AND id_pesticide = $2 AND is_active = TRUE
+               AND id_application <> $3
+             ORDER BY applied_at DESC
+             LIMIT 1`,
+            [plotId, idPesticide, excludeId],
+        )
+        return result.rows[0]
+    }
+
     // Historial de una parcela, más reciente primero.
     static async findByPlot(plotId) {
         const result = await pool.query(
