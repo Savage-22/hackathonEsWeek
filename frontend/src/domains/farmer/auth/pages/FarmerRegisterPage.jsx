@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Check } from 'lucide-react'
 
 import AuthLayout from '../../../../shared/components/AuthLayout.jsx'
+import { registerFarmer, getFarmerAuthErrorMessage } from '../services/farmerAuthService.js'
 
 const inputClass =
     'mt-1 w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-ink placeholder:text-ink/35 focus:border-forest focus:outline-none'
@@ -12,18 +13,36 @@ const PERKS = ['Sin costo, para siempre', 'Funciona sin internet', 'Listo en men
 const EMPTY = { nombre: '', dni: '', celular: '', distrito: '', cultivo: '', password: '' }
 
 export default function FarmerRegisterPage() {
+    const navigate = useNavigate()
     const [form, setForm] = useState(EMPTY)
-    const [submitted, setSubmitted] = useState(false)
+    const [error, setError] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleChange = (event) => {
         const { name, value } = event.target
         setForm((prev) => ({ ...prev, [name]: value }))
     }
 
-    // UI por ahora: el alta real se conecta con el módulo de agricultores (#11/#13).
-    const handleSubmit = (event) => {
+    // Crea la cuenta en el backend y entra directo a la app (auto-login).
+    // El "cultivo" es informativo: se asocia luego a cada parcela, no al agricultor.
+    const handleSubmit = async (event) => {
         event.preventDefault()
-        setSubmitted(true)
+        setError('')
+        setIsSubmitting(true)
+        try {
+            await registerFarmer({
+                name: form.nombre.trim(),
+                dni: form.dni.trim(),
+                phone: form.celular.trim() || undefined,
+                district: form.distrito.trim() || undefined,
+                password: form.password,
+            })
+            navigate('/app')
+        } catch (submitError) {
+            setError(getFarmerAuthErrorMessage(submitError))
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -134,18 +153,14 @@ export default function FarmerRegisterPage() {
                     Acepto el cuidado responsable de mis datos y las buenas prácticas agrícolas.
                 </label>
 
-                {submitted && (
-                    <p className="rounded-lg bg-primary/10 px-4 py-3 text-sm text-forest">
-                        ¡Gracias, {form.nombre || 'agricultor'}! Estamos habilitando el registro en línea.
-                        Muy pronto podrás crear tu cuenta aquí.
-                    </p>
-                )}
+                {error && <p className="text-sm text-error">{error}</p>}
 
                 <button
                     type="submit"
-                    className="w-full rounded-lg bg-forest py-3 font-semibold text-white transition-colors hover:bg-forest-deep"
+                    disabled={isSubmitting}
+                    className="w-full rounded-lg bg-forest py-3 font-semibold text-white transition-colors hover:bg-forest-deep disabled:opacity-60"
                 >
-                    Crear cuenta
+                    {isSubmitting ? 'Creando cuenta…' : 'Crear cuenta'}
                 </button>
             </form>
 

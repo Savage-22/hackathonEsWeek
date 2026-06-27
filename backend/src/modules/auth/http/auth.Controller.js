@@ -1,6 +1,15 @@
 import AuthService from '../application/auth.Service.js'
 
 class AuthController {
+    static async registerFarmer(req, res, next) {
+        try {
+            const result = await AuthService.registerFarmer(req.body)
+            return res.status(201).json({ success: true, message: 'Cuenta creada', data: result })
+        } catch (error) {
+            next(error)
+        }
+    }
+
     static async loginFarmer(req, res, next) {
         try {
             const result = await AuthService.loginFarmer(req.body.dni, req.body.password)
