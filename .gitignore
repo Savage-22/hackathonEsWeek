@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 
+# Subidas de archivos (fotos de aplicaciones #16)
+backend/uploads/
+
 # Entorno
 .env
 .env.*.local
