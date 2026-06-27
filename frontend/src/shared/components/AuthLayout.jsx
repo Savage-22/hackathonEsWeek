@@ -1,7 +1,8 @@
-import logo from '../../../../assets/logo.jpeg'
+import logo from '../../assets/logo.jpeg'
 
 // Layout de autenticación con panel dividido: lado verde con identidad de marca
 // (título, descripción y contenido inferior variable) + lado del formulario.
+// Compartido por el login unificado y el registro del agricultor.
 export default function AuthLayout({ title, subtitle, description, aside, children }) {
     return (
         <main className="grid min-h-screen place-items-center bg-cream p-4 font-sans">

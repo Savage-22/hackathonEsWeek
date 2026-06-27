@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { Check } from 'lucide-react'
 
-import AuthLayout from '../components/AuthLayout.jsx'
+import AuthLayout from '../../../../shared/components/AuthLayout.jsx'
 
 const inputClass =
     'mt-1 w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-ink placeholder:text-ink/35 focus:border-forest focus:outline-none'
