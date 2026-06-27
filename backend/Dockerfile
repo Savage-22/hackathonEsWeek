@@ -19,6 +19,6 @@ COPY . .
 RUN mkdir -p uploads
 
 ENV NODE_ENV=production
-EXPOSE 4000
+EXPOSE 4001
 
 CMD ["node", "server.js"]
