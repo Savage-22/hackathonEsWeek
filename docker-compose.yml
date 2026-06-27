@@ -1,0 +1,26 @@
+# AgroGuardian — orquestación para despliegue en el servidor (GCP).
+# La base de datos es Neon (remota): NO hay servicio de Postgres aquí.
+# El nginx del HOST (con certbot) hace TLS y enruta a estos contenedores por localhost.
+
+services:
+  backend:
+    build: ./backend
+    env_file: ./backend/.env          # DATABASE_URL (Neon), JWT_SECRET, etc.
+    environment:
+      - PORT=4000
+    ports:
+      - "127.0.0.1:4000:4000"         # solo accesible desde el host (lo proxea nginx)
+    volumes:
+      - ./backend/uploads:/app/uploads # fotos de aplicaciones persistentes
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ""              # mismo origen: el front llama /api y /uploads relativos
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
