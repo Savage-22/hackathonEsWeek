@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { Check } from 'lucide-react'
 
 import logo from '../../../../assets/logo.jpeg'
-import StripedPlaceholder from './StripedPlaceholder.jsx'
+import agricultor from '../../../../assets/agricultor.jpg'
 
 const CHIPS = [
     { label: 'Sin internet', color: 'bg-info' },
@@ -57,14 +57,16 @@ export default function HeroSection() {
 
             {/* Mockup */}
             <div className="relative">
-                <StripedPlaceholder className="aspect-[4/5] w-full rounded-3xl border border-black/5">
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-black/5 shadow-lg">
+                    <img
+                        src={agricultor}
+                        alt="Agricultor trabajando en su chacra"
+                        className="h-full w-full object-cover"
+                    />
                     <span className="absolute left-5 top-5 grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-md">
                         <img src={logo} alt="" className="h-12 w-12 object-contain" />
                     </span>
-                    <span className="absolute bottom-5 left-5 rounded-md bg-white/70 px-3 py-1 font-mono text-xs text-ink/60">
-                        FOTO · agricultor en su chacra
-                    </span>
-                </StripedPlaceholder>
+                </div>
 
                 <div className="absolute -bottom-5 right-4 flex items-center gap-3 rounded-2xl bg-white px-5 py-4 shadow-lg sm:right-0">
                     <span className="grid h-10 w-10 place-items-center rounded-full bg-primary/15 text-primary">
