@@ -10,7 +10,8 @@
     "lint": "oxlint",
     "test": "node --test",
     "migrate": "node scripts/migrate.js",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "create-user": "node scripts/create-institutional-user.js"
   },
   "keywords": [],
   "author": "",
