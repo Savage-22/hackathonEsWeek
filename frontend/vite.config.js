@@ -23,8 +23,8 @@ export default defineConfig({
         background_color: '#f6faf6',
         display: 'standalone',
         orientation: 'portrait',
-        // Home del agricultor (hoy en '/'; pasa a '/app' al integrar la landing #46).
-        start_url: '/',
+        // La PWA instalada abre directo el home del agricultor; '/' es la landing pública.
+        start_url: '/app',
         scope: '/',
         icons: [
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
