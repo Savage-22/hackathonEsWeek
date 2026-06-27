@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { ArrowLeft, CheckCircle2, RefreshCw, Image as ImageIcon } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, RefreshCw, Image as ImageIcon, CalendarClock } from 'lucide-react'
 
 import db from '../../../../infrastructure/offline/db.js'
 import { onConnectivityChange } from '../../../../infrastructure/offline/syncManager.js'
@@ -8,6 +8,22 @@ import OfflineBanner from '../../../../shared/components/OfflineBanner.jsx'
 import PhotoCapture from '../components/PhotoCapture.jsx'
 import AlertList from '../components/AlertList.jsx'
 import BatchSection from '../../traceability/components/BatchSection.jsx'
+import { updateHarvestDate } from '../../plots/services/plotsService.js'
+
+// Tipo de alerta que ofrece corregir la fecha de cosecha (espejo de ALERT_TYPES
+// del backend; aquí basta el string para reconocerla).
+const HARVEST_ALERT = 'HARVEST_BEFORE_WITHDRAWAL'
+
+const findHarvestAlert = (alerts) => alerts?.find((a) => a.type === HARVEST_ALERT)
+
+// La corrección sigue siendo necesaria solo si la cosecha estimada actual de la
+// parcela cae antes de la fecha segura. Tras corregirla, el atajo desaparece.
+function harvestStillUnsafe(plot, alert) {
+    const safe = alert?.context?.safeHarvestDate
+    if (!safe) return false
+    const current = (plot?.estimated_harvest_date ?? '').slice(0, 10)
+    return !current || current < safe
+}
 import {
     getRecommendations,
     saveApplication,
@@ -50,6 +66,9 @@ export default function FarmerApplicationsPage() {
     const [isSaving, setIsSaving] = useState(false)
 
     const refreshHistory = async () => setHistory(await getApplications(localId))
+    const refreshPlot = async () => setPlot(await db.plots.get(localId))
+    // Tras corregir la cosecha: relee la parcela (oculta el atajo) y el historial.
+    const onHarvestUpdated = async () => { await refreshPlot(); await refreshHistory() }
 
     useEffect(() => {
         let active = true
@@ -215,6 +234,12 @@ export default function FarmerApplicationsPage() {
                         <div className="mt-4">
                             <p className="mb-2 text-sm font-semibold text-ink">Alertas de buenas prácticas</p>
                             <AlertList alerts={lastAlerts} />
+                            {(() => {
+                                const a = findHarvestAlert(lastAlerts)
+                                return a && harvestStillUnsafe(plot, a) ? (
+                                    <HarvestFix alert={a} plot={plot} onUpdated={onHarvestUpdated} />
+                                ) : null
+                            })()}
                         </div>
                     )}
 
@@ -256,6 +281,12 @@ export default function FarmerApplicationsPage() {
                                     {app.alerts?.length > 0 && (
                                         <div className="mt-3">
                                             <AlertList alerts={app.alerts} />
+                                            {(() => {
+                                                const a = findHarvestAlert(app.alerts)
+                                                return a && harvestStillUnsafe(plot, a) ? (
+                                                    <HarvestFix alert={a} plot={plot} onUpdated={onHarvestUpdated} />
+                                                ) : null
+                                            })()}
                                         </div>
                                     )}
                                 </li>
@@ -268,6 +299,57 @@ export default function FarmerApplicationsPage() {
                 <BatchSection plot={plot} />
             </div>
         </main>
+    )
+}
+
+// Atajo contextual de la alerta de carencia: explica por qué salió y deja
+// corregir SOLO la fecha de cosecha (precargada con la fecha segura recomendada).
+// No re-evalúa aplicaciones ya registradas: la advertencia previa queda como
+// registro; la corrección evita la alerta de aquí en adelante.
+function HarvestFix({ alert, plot, onUpdated }) {
+    const safe = alert.context?.safeHarvestDate ?? ''
+    const [date, setDate] = useState(safe)
+    const [saving, setSaving] = useState(false)
+
+    const save = async () => {
+        if (!date) return
+        setSaving(true)
+        try {
+            await updateHarvestDate(plot.localId, date)
+            await onUpdated()
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    return (
+        <div className="mt-2 rounded-lg border border-error/20 bg-error/5 p-3">
+            <p className="flex items-start gap-2 text-sm text-ink">
+                <CalendarClock size={16} className="mt-0.5 shrink-0 text-error" />
+                <span>
+                    La carencia del producto es de <strong>{alert.context?.withdrawalDays} días</strong>:
+                    cosechar seguro recién a partir del <strong>{safe}</strong>. Si tu cosecha estimada
+                    era antes, corrígela aquí.
+                </span>
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+                <input
+                    type="date"
+                    value={date}
+                    min={safe}
+                    onChange={(event) => setDate(event.target.value)}
+                    className="rounded-lg border border-black/10 bg-white px-3 py-2 text-sm text-ink"
+                />
+                <button
+                    type="button"
+                    onClick={save}
+                    disabled={saving || !date}
+                    className="rounded-lg bg-forest px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-forest-deep disabled:opacity-60"
+                >
+                    {saving ? 'Guardando…' : 'Actualizar cosecha'}
+                </button>
+            </div>
+        </div>
     )
 }
 

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { ArrowLeft, Sprout, CheckCircle2, RefreshCw, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Sprout, CheckCircle2, RefreshCw, ChevronRight, Pencil, X } from 'lucide-react'
 
 import { getUser } from '../../../../infrastructure/session.js'
 import OfflineBanner from '../../../../shared/components/OfflineBanner.jsx'
 import LocationPicker from '../components/LocationPicker.jsx'
-import { savePlot, getPlots, validatePlotForm } from '../services/plotsService.js'
+import { savePlot, updatePlot, getPlots, validatePlotForm } from '../services/plotsService.js'
 
 const inputClass =
     'mt-1 w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-ink placeholder:text-ink/35 focus:border-forest focus:outline-none'
@@ -28,6 +28,8 @@ export default function FarmerPlotsPage() {
     const [errors, setErrors] = useState([])
     const [saved, setSaved] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
+    // localId de la parcela en edición; null = modo creación.
+    const [editingId, setEditingId] = useState(null)
 
     const refresh = async () => setPlots(await getPlots(farmer.id))
 
@@ -43,6 +45,31 @@ export default function FarmerPlotsPage() {
 
     const handleLocation = (coords) => setForm((prev) => ({ ...prev, ...coords }))
 
+    // Carga la parcela en el formulario para editarla. Las fechas se recortan a
+    // 'YYYY-MM-DD' para el input date; el área a string para el input number.
+    const startEdit = (plot) => {
+        setEditingId(plot.localId)
+        setForm({
+            name: plot.name ?? '',
+            crop: plot.crop ?? '',
+            area_ha: plot.area_ha == null ? '' : String(plot.area_ha),
+            planting_date: (plot.planting_date ?? '').slice(0, 10),
+            estimated_harvest_date: (plot.estimated_harvest_date ?? '').slice(0, 10),
+            latitude: plot.latitude ?? null,
+            longitude: plot.longitude ?? null,
+            accuracy: plot.accuracy ?? null,
+        })
+        setErrors([])
+        setSaved(false)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    const cancelEdit = () => {
+        setEditingId(null)
+        setForm(EMPTY)
+        setErrors([])
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault()
         setSaved(false)
@@ -52,8 +79,13 @@ export default function FarmerPlotsPage() {
 
         setIsSaving(true)
         try {
-            await savePlot(form, farmer.id)
+            if (editingId != null) {
+                await updatePlot(editingId, form)
+            } else {
+                await savePlot(form, farmer.id)
+            }
             setForm(EMPTY)
+            setEditingId(null)
             setSaved(true)
             await refresh()
         } finally {
@@ -74,7 +106,17 @@ export default function FarmerPlotsPage() {
 
                 {/* Formulario de registro */}
                 <form onSubmit={handleSubmit} className="mt-6 rounded-2xl bg-white p-5 shadow-sm">
-                    <h2 className="font-display text-lg font-bold text-ink">Registrar parcela</h2>
+                    <div className="flex items-center justify-between">
+                        <h2 className="font-display text-lg font-bold text-ink">
+                            {editingId != null ? 'Editar parcela' : 'Registrar parcela'}
+                        </h2>
+                        {editingId != null && (
+                            <button type="button" onClick={cancelEdit}
+                                className="inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink">
+                                <X size={15} /> Cancelar
+                            </button>
+                        )}
+                    </div>
 
                     <div className="mt-4 space-y-4">
                         <div>
@@ -127,13 +169,17 @@ export default function FarmerPlotsPage() {
 
                     {saved && (
                         <p className="mt-4 rounded-lg bg-primary/10 px-4 py-3 text-sm text-forest">
-                            Parcela guardada. Se sincronizará automáticamente cuando haya conexión.
+                            {editingId != null
+                                ? 'Cambios guardados. Se sincronizarán automáticamente cuando haya conexión.'
+                                : 'Parcela guardada. Se sincronizará automáticamente cuando haya conexión.'}
                         </p>
                     )}
 
                     <button type="submit" disabled={isSaving}
                         className="mt-5 w-full rounded-lg bg-forest py-3 font-semibold text-white transition-colors hover:bg-forest-deep disabled:opacity-60">
-                        {isSaving ? 'Guardando…' : 'Guardar parcela'}
+                        {isSaving
+                            ? 'Guardando…'
+                            : editingId != null ? 'Guardar cambios' : 'Guardar parcela'}
                     </button>
                 </form>
 
@@ -145,10 +191,13 @@ export default function FarmerPlotsPage() {
                     ) : (
                         <ul className="mt-3 space-y-3">
                             {plots.map((plot) => (
-                                <li key={plot.localId}>
+                                <li
+                                    key={plot.localId}
+                                    className="flex items-center gap-2 rounded-xl bg-white pr-2 shadow-sm transition-colors hover:bg-forest/5"
+                                >
                                     <Link
                                         to={`/app/parcelas/${plot.localId}`}
-                                        className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm transition-colors hover:bg-forest/5"
+                                        className="flex min-w-0 flex-1 items-center gap-3 p-4"
                                     >
                                         <span className="grid h-10 w-10 place-items-center rounded-lg bg-forest/10 text-forest">
                                             <Sprout size={18} />
@@ -158,20 +207,29 @@ export default function FarmerPlotsPage() {
                                             <p className="truncate text-sm text-muted">
                                                 {plot.crop}
                                                 {plot.area_ha != null && ` · ${plot.area_ha} ha`}
-                                                {plot.latitude != null && ` · ${plot.latitude}, ${plot.longitude}`}
+                                                {plot.estimated_harvest_date &&
+                                                    ` · cosecha ${plot.estimated_harvest_date.slice(0, 10)}`}
                                             </p>
                                         </div>
                                         {plot.syncStatus === 'synced' ? (
-                                            <span className="inline-flex items-center gap-1 text-xs font-medium text-forest">
+                                            <span className="hidden items-center gap-1 text-xs font-medium text-forest sm:inline-flex">
                                                 <CheckCircle2 size={14} /> Sincronizada
                                             </span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 text-xs font-medium text-accent">
+                                            <span className="hidden items-center gap-1 text-xs font-medium text-accent sm:inline-flex">
                                                 <RefreshCw size={14} /> Pendiente
                                             </span>
                                         )}
                                         <ChevronRight size={18} className="text-muted" />
                                     </Link>
+                                    <button
+                                        type="button"
+                                        onClick={() => startEdit(plot)}
+                                        aria-label={`Editar ${plot.name}`}
+                                        className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-black/10 px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-forest hover:text-forest"
+                                    >
+                                        <Pencil size={14} /> Editar
+                                    </button>
                                 </li>
                             ))}
                         </ul>

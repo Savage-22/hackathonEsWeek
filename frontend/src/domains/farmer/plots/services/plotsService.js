@@ -1,4 +1,4 @@
-import { createPlotLocal, listPlotsLocal } from '../api/plotsApi.js'
+import { createPlotLocal, updatePlotLocal, listPlotsLocal } from '../api/plotsApi.js'
 
 // Columnas que entiende el backend (#12 / sync whitelist). El resto de campos
 // locales (p. ej. farmerServerId) se guardan solo para filtrar en el dispositivo.
@@ -34,6 +34,18 @@ export function validatePlotForm(form) {
 export async function savePlot(form, farmerServerId) {
     const payload = { ...toBackendPayload(form), farmerServerId }
     return createPlotLocal(payload)
+}
+
+// Edición completa de la parcela (mismo whitelist que la creación).
+export async function updatePlot(localId, form) {
+    return updatePlotLocal(localId, toBackendPayload(form))
+}
+
+// Atajo: corrige solo la fecha de cosecha estimada (resuelve la alerta de
+// carencia sin tocar el resto de la parcela). Espera 'YYYY-MM-DD'.
+export async function updateHarvestDate(localId, estimatedHarvestDate) {
+    if (!estimatedHarvestDate) return
+    return updatePlotLocal(localId, { estimated_harvest_date: estimatedHarvestDate })
 }
 
 // Parcelas del agricultor en sesión, más recientes primero.
