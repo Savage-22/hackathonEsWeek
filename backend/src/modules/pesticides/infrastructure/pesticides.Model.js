@@ -37,7 +37,7 @@ class PesticidesModel {
             `SELECT ${RECOMMENDATION_FIELDS}
              FROM crop_recommendations r
              JOIN pesticides p ON p.id_pesticide = r.id_pesticide
-             WHERE r.crop = $1 AND r.is_active = TRUE AND p.is_active = TRUE
+             WHERE LOWER(r.crop) = LOWER($1) AND r.is_active = TRUE AND p.is_active = TRUE
              ORDER BY p.name`,
             [crop],
         )
@@ -50,7 +50,7 @@ class PesticidesModel {
             `SELECT ${RECOMMENDATION_FIELDS}
              FROM crop_recommendations r
              JOIN pesticides p ON p.id_pesticide = r.id_pesticide
-             WHERE r.crop = $1 AND r.id_pesticide = $2 AND r.is_active = TRUE`,
+             WHERE LOWER(r.crop) = LOWER($1) AND r.id_pesticide = $2 AND r.is_active = TRUE`,
             [crop, idPesticide],
         )
         return result.rows[0]
