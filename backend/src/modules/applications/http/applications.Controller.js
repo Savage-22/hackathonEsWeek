@@ -15,8 +15,8 @@ class ApplicationsController {
                 observations: req.body.observations || null,
                 photo_url: photoUrl,
             }
-            const application = await ApplicationsService.create(req.user.id, data)
-            return res.status(201).json({ success: true, message: 'Aplicación registrada', data: application })
+            const result = await ApplicationsService.create(req.user.id, data)
+            return res.status(201).json({ success: true, message: 'Aplicación registrada', data: result })
         } catch (error) {
             next(error)
         }

@@ -14,6 +14,7 @@ import FarmerRegisterPage from './domains/farmer/auth/pages/FarmerRegisterPage.j
 import FarmerHomePage from './domains/farmer/home/pages/FarmerHomePage.jsx'
 import FarmerProfilePage from './domains/farmer/profile/pages/FarmerProfilePage.jsx'
 import FarmerPlotsPage from './domains/farmer/plots/pages/FarmerPlotsPage.jsx'
+import FarmerApplicationsPage from './domains/farmer/applications/pages/FarmerApplicationsPage.jsx'
 import PanelHomePage from './domains/institutional/dashboard/pages/PanelHomePage.jsx'
 import HealthCheckPage from './domains/system/health/pages/HealthCheckPage.jsx'
 
@@ -39,6 +40,7 @@ export default function App() {
                 <Route path="/app" element={<FarmerHomePage />} />
                 <Route path="/app/perfil" element={<FarmerProfilePage />} />
                 <Route path="/app/parcelas" element={<FarmerPlotsPage />} />
+                <Route path="/app/parcelas/:plotLocalId" element={<FarmerApplicationsPage />} />
             </Route>
 
             {/* Institucional (panel) — mismo login con la pestaña institucional activa */}

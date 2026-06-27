@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { ArrowLeft, Sprout, CheckCircle2, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Sprout, CheckCircle2, RefreshCw, ChevronRight } from 'lucide-react'
 
 import { getUser } from '../../../../infrastructure/session.js'
 import OfflineBanner from '../../../../shared/components/OfflineBanner.jsx'
@@ -145,27 +145,33 @@ export default function FarmerPlotsPage() {
                     ) : (
                         <ul className="mt-3 space-y-3">
                             {plots.map((plot) => (
-                                <li key={plot.localId} className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
-                                    <span className="grid h-10 w-10 place-items-center rounded-lg bg-forest/10 text-forest">
-                                        <Sprout size={18} />
-                                    </span>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="truncate font-semibold text-ink">{plot.name}</p>
-                                        <p className="truncate text-sm text-muted">
-                                            {plot.crop}
-                                            {plot.area_ha != null && ` · ${plot.area_ha} ha`}
-                                            {plot.latitude != null && ` · ${plot.latitude}, ${plot.longitude}`}
-                                        </p>
-                                    </div>
-                                    {plot.syncStatus === 'synced' ? (
-                                        <span className="inline-flex items-center gap-1 text-xs font-medium text-forest">
-                                            <CheckCircle2 size={14} /> Sincronizada
+                                <li key={plot.localId}>
+                                    <Link
+                                        to={`/app/parcelas/${plot.localId}`}
+                                        className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm transition-colors hover:bg-forest/5"
+                                    >
+                                        <span className="grid h-10 w-10 place-items-center rounded-lg bg-forest/10 text-forest">
+                                            <Sprout size={18} />
                                         </span>
-                                    ) : (
-                                        <span className="inline-flex items-center gap-1 text-xs font-medium text-accent">
-                                            <RefreshCw size={14} /> Pendiente
-                                        </span>
-                                    )}
+                                        <div className="min-w-0 flex-1">
+                                            <p className="truncate font-semibold text-ink">{plot.name}</p>
+                                            <p className="truncate text-sm text-muted">
+                                                {plot.crop}
+                                                {plot.area_ha != null && ` · ${plot.area_ha} ha`}
+                                                {plot.latitude != null && ` · ${plot.latitude}, ${plot.longitude}`}
+                                            </p>
+                                        </div>
+                                        {plot.syncStatus === 'synced' ? (
+                                            <span className="inline-flex items-center gap-1 text-xs font-medium text-forest">
+                                                <CheckCircle2 size={14} /> Sincronizada
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 text-xs font-medium text-accent">
+                                                <RefreshCw size={14} /> Pendiente
+                                            </span>
+                                        )}
+                                        <ChevronRight size={18} className="text-muted" />
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
