@@ -81,9 +81,9 @@ export default function FarmerLoginPage() {
                         <input type="checkbox" defaultChecked className="accent-forest" />
                         Recordarme
                     </label>
-                    <a href="#contacto" className="font-semibold text-forest hover:text-forest-deep">
+                    <Link to="/contacto" className="font-semibold text-forest hover:text-forest-deep">
                         ¿Olvidaste tu clave?
-                    </a>
+                    </Link>
                 </div>
 
                 {error && <p className="text-sm text-error">{error}</p>}

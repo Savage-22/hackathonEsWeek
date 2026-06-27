@@ -1,38 +1,36 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, NavLink } from 'react-router'
 
 import BrandMark from './BrandMark.jsx'
-
-// Anclas a las secciones de la landing (una sola página con scroll).
-const SECTIONS = [
-    { href: '#inicio', label: 'Inicio' },
-    { href: '#como-funciona', label: 'Cómo funciona' },
-    { href: '#caracteristicas', label: 'Características' },
-    { href: '#trazabilidad', label: 'Trazabilidad' },
-    { href: '#incentivos', label: 'Incentivos' },
-    { href: '#contacto', label: 'Contacto' },
-]
+import { PUBLIC_NAV } from '../navConfig.js'
 
 export default function Navbar() {
     const [open, setOpen] = useState(false)
 
+    const linkClass = ({ isActive }) =>
+        `text-sm font-medium transition-colors hover:text-forest ${
+            isActive ? 'text-forest' : 'text-ink/70'
+        }`
+
+    const mobileLinkClass = ({ isActive }) =>
+        `block py-2 text-sm font-medium transition-colors hover:text-forest ${
+            isActive ? 'text-forest' : 'text-ink/80'
+        }`
+
     return (
         <header className="sticky top-0 z-50 border-b border-black/5 bg-cream/90 backdrop-blur">
             <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-                <a href="#inicio" aria-label="AgroGuardian — inicio">
+                <Link to="/" aria-label="AgroGuardian — inicio">
                     <BrandMark />
-                </a>
+                </Link>
 
-                {/* Enlaces de sección (escritorio) */}
+                {/* Enlaces de vista (escritorio) */}
                 <ul className="hidden items-center gap-7 lg:flex">
-                    {SECTIONS.map((section) => (
-                        <li key={section.href}>
-                            <a
-                                href={section.href}
-                                className="text-sm font-medium text-ink/70 transition-colors hover:text-forest"
-                            >
-                                {section.label}
-                            </a>
+                    {PUBLIC_NAV.map((item) => (
+                        <li key={item.to}>
+                            <NavLink to={item.to} end={item.to === '/'} className={linkClass}>
+                                {item.label}
+                            </NavLink>
                         </li>
                     ))}
                 </ul>
@@ -66,26 +64,29 @@ export default function Navbar() {
             {open && (
                 <div className="border-t border-black/5 bg-cream lg:hidden">
                     <ul className="mx-auto flex max-w-7xl flex-col px-4 py-2 sm:px-6">
-                        {SECTIONS.map((section) => (
-                            <li key={section.href}>
-                                <a
-                                    href={section.href}
+                        {PUBLIC_NAV.map((item) => (
+                            <li key={item.to}>
+                                <NavLink
+                                    to={item.to}
+                                    end={item.to === '/'}
                                     onClick={() => setOpen(false)}
-                                    className="block py-2 text-sm font-medium text-ink/80 hover:text-forest"
+                                    className={mobileLinkClass}
                                 >
-                                    {section.label}
-                                </a>
+                                    {item.label}
+                                </NavLink>
                             </li>
                         ))}
                         <li className="mt-2 flex gap-3 border-t border-black/5 pt-3">
                             <Link
                                 to="/login"
+                                onClick={() => setOpen(false)}
                                 className="flex-1 rounded-full border border-forest py-2.5 text-center text-sm font-semibold text-forest"
                             >
                                 Iniciar sesión
                             </Link>
                             <Link
                                 to="/registro"
+                                onClick={() => setOpen(false)}
                                 className="flex-1 rounded-full bg-forest py-2.5 text-center text-sm font-semibold text-white"
                             >
                                 Crear cuenta

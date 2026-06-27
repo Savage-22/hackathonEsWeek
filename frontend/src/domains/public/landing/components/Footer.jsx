@@ -2,15 +2,15 @@ import { Link } from 'react-router'
 
 import BrandMark from './BrandMark.jsx'
 
-// Columnas del footer. Los enlaces de sección apuntan a las anclas de la landing.
+// Columnas del footer. Cada enlace apunta a la ruta de su vista pública.
 const COLUMNS = [
     {
         title: 'Producto',
         links: [
-            { label: 'Cómo funciona', href: '#como-funciona' },
-            { label: 'Características', href: '#caracteristicas' },
-            { label: 'Trazabilidad', href: '#trazabilidad' },
-            { label: 'Incentivos', href: '#incentivos' },
+            { label: 'Cómo funciona', to: '/como-funciona' },
+            { label: 'Características', to: '/caracteristicas' },
+            { label: 'Trazabilidad', to: '/trazabilidad' },
+            { label: 'Incentivos', to: '/incentivos' },
         ],
     },
     {
@@ -18,32 +18,24 @@ const COLUMNS = [
         links: [
             { label: 'Iniciar sesión', to: '/login' },
             { label: 'Crear cuenta', to: '/registro' },
-            { label: 'Contacto', href: '#contacto' },
+            { label: 'Contacto', to: '/contacto' },
         ],
     },
     {
         title: 'Recursos',
         links: [
-            { label: 'Guías de uso', href: '#como-funciona' },
-            { label: 'Preguntas frecuentes', href: '#contacto' },
-            { label: 'Soporte', href: '#contacto' },
+            { label: 'Guías de uso', to: '/como-funciona' },
+            { label: 'Preguntas frecuentes', to: '/contacto' },
+            { label: 'Soporte', to: '/contacto' },
         ],
     },
 ]
 
 function FooterLink({ link }) {
-    const className = 'text-sm text-white/70 transition-colors hover:text-white'
-    if (link.to) {
-        return (
-            <Link to={link.to} className={className}>
-                {link.label}
-            </Link>
-        )
-    }
     return (
-        <a href={link.href} className={className}>
+        <Link to={link.to} className="text-sm text-white/70 transition-colors hover:text-white">
             {link.label}
-        </a>
+        </Link>
     )
 }
 

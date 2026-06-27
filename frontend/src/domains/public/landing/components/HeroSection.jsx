@@ -37,12 +37,12 @@ export default function HeroSection() {
                     >
                         Empezar gratis
                     </Link>
-                    <a
-                        href="#como-funciona"
+                    <Link
+                        to="/como-funciona"
                         className="rounded-full border border-black/10 bg-white px-7 py-3.5 font-semibold text-ink transition-colors hover:border-forest hover:text-forest"
                     >
                         Ver cómo funciona
-                    </a>
+                    </Link>
                 </div>
 
                 <ul className="mt-8 flex flex-wrap gap-x-7 gap-y-3">
