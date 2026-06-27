@@ -4,6 +4,7 @@ import FarmerGuard from './shared/guards/FarmerGuard.jsx'
 import InstitutionalGuard from './shared/guards/InstitutionalGuard.jsx'
 import LandingPage from './domains/public/landing/pages/LandingPage.jsx'
 import FarmerLoginPage from './domains/farmer/auth/pages/FarmerLoginPage.jsx'
+import FarmerRegisterPage from './domains/farmer/auth/pages/FarmerRegisterPage.jsx'
 import FarmerHomePage from './domains/farmer/home/pages/FarmerHomePage.jsx'
 import InstitutionalLoginPage from './domains/institutional/auth/pages/InstitutionalLoginPage.jsx'
 import PanelHomePage from './domains/institutional/dashboard/pages/PanelHomePage.jsx'
@@ -17,6 +18,7 @@ export default function App() {
 
             {/* Agricultor (PWA) */}
             <Route path="/login" element={<FarmerLoginPage />} />
+            <Route path="/registro" element={<FarmerRegisterPage />} />
             <Route element={<FarmerGuard />}>
                 <Route path="/app" element={<FarmerHomePage />} />
             </Route>
@@ -29,7 +31,6 @@ export default function App() {
 
             <Route path="/health-check" element={<HealthCheckPage />} />
 
-            {/* Rutas aún no definidas (p. ej. /registro, llega en el combo de auth) */}
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     )
