@@ -12,6 +12,8 @@ import ContactPage from './domains/public/landing/pages/ContactPage.jsx'
 import FarmerLoginPage from './domains/farmer/auth/pages/FarmerLoginPage.jsx'
 import FarmerRegisterPage from './domains/farmer/auth/pages/FarmerRegisterPage.jsx'
 import FarmerHomePage from './domains/farmer/home/pages/FarmerHomePage.jsx'
+import FarmerProfilePage from './domains/farmer/profile/pages/FarmerProfilePage.jsx'
+import FarmerPlotsPage from './domains/farmer/plots/pages/FarmerPlotsPage.jsx'
 import InstitutionalLoginPage from './domains/institutional/auth/pages/InstitutionalLoginPage.jsx'
 import PanelHomePage from './domains/institutional/dashboard/pages/PanelHomePage.jsx'
 import HealthCheckPage from './domains/system/health/pages/HealthCheckPage.jsx'
@@ -34,6 +36,8 @@ export default function App() {
             <Route path="/registro" element={<FarmerRegisterPage />} />
             <Route element={<FarmerGuard />}>
                 <Route path="/app" element={<FarmerHomePage />} />
+                <Route path="/app/perfil" element={<FarmerProfilePage />} />
+                <Route path="/app/parcelas" element={<FarmerPlotsPage />} />
             </Route>
 
             {/* Institucional (panel) */}
